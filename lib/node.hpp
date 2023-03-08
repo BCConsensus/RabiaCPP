@@ -33,12 +33,13 @@ class Node {
   }
 
   // peers - array of addresses of other nodes
-  std::vector<boost::asio::ip::tcp::endpoint> peers;
+  std::vector<tcp::endpoint> peers;
 
   // addr - address of this node
   std::string addr;
 
   // PQ - instance of priority queue
+  // TODO: switch to blocking queue that waits until something is in queue
   std::priority_queue<Proposal, std::vector<Proposal>, std::less<Proposal>> pq;
 
   // lindex - current slot index in the log
@@ -46,6 +47,8 @@ class Node {
 
   // messages
   std::map<uint64_t, char[]> messages;
+
+  // TODO: need message IDs to create map of requests to not process
 
   void run() {
     while (true) {
@@ -58,11 +61,11 @@ class Node {
 
   // weak-mvc function
   // takes a proposal and the node's current slot index in log
+  // TODO: std::variant instead because Proposal, null, unknown
+  // TODO: co_await write as well
+  // reminder: just because co_await read succeeds doesn't mean it got all the
+  // data must check how many bytes it got
   std::optional<Proposal> SMR(Proposal proposal, uint16_t lindex) {
-    boost::asio::io_service io_service;
-
-    boost::asio::ip::tcp::resolver resolver(io_service);
-
-    // async connect to each peer, send proposal, wait for responses
+    // https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio/example/cpp20/coroutines/echo_server.cpp
   }
 };
