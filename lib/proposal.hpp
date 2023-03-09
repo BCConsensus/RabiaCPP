@@ -1,4 +1,6 @@
 #include <boost/asio/buffer.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
@@ -6,11 +8,10 @@
 class Proposal {
   boost::asio::const_buffer data;
   std::time_t timestamp;
+  boost::uuids::uuid id;
 
-  // TODO: maybe use ulid? then map ID to data
-  // also could use bitfields
-  // or just use a struct with timestamp and id
   Proposal(boost::asio::const_buffer _data, std::time_t _timestamp) {
+    id = boost::uuids::random_generator()();
     data = _data;
     timestamp = _timestamp;
   }

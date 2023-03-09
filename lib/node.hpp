@@ -2,13 +2,12 @@
 #include <boost/bind.hpp>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <map>
 #include <queue>
 #include <string>
 
 #include "proposal.hpp"
-
-#define PORT 2000
 
 using boost::asio::ip::address;
 using boost::asio::ip::tcp;
@@ -22,18 +21,12 @@ class Node {
   // uint64_t, const uint8_t*, uint32_t)> block) = 0;
   Node(std::string _address, std::vector<std::string> _peers) {
     addr = _address;
-
-    // create endpoints for each peer's address
-    for (auto peer : _peers) {
-      address address = address::from_string(peer);
-      tcp::endpoint endpoint(address, PORT);
-      peers.push_back(endpoint);
-    }
+    peers = _peers;
     lindex = 0;
   }
 
   // peers - array of addresses of other nodes
-  std::vector<tcp::endpoint> peers;
+  std::vector<std::string> peers;
 
   // addr - address of this node
   std::string addr;
@@ -46,7 +39,7 @@ class Node {
   uint16_t lindex;
 
   // messages
-  std::map<uint64_t, char[]> messages;
+  // std::map<uint64_t, char[]> messages;
 
   // TODO: need message IDs to create map of requests to not process
 
@@ -59,13 +52,16 @@ class Node {
     }
   }
 
+  enum Null { null };
+  enum Unknown { unknown };
+
   // weak-mvc function
   // takes a proposal and the node's current slot index in log
   // TODO: std::variant instead because Proposal, null, unknown
   // TODO: co_await write as well
   // reminder: just because co_await read succeeds doesn't mean it got all the
   // data must check how many bytes it got
-  std::optional<Proposal> SMR(Proposal proposal, uint16_t lindex) {
+  std::variant<Proposal, Null, Unknown> SMR(Proposal proposal) {
     // https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio/example/cpp20/coroutines/echo_server.cpp
   }
 };
