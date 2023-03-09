@@ -39,22 +39,34 @@ class Multicaster {
 
   std::vector<tcp::endpoint> peers;
 
+  // TODO: multicaster should contain a list of inbound and outbound connections
+  // need to co_spawn some function that listens for incoming connections and
+  // accepts them then stop that coroutine when the connects are made and
+  // multicaster is built
+
+  // TODO: make two connections to each peer (one from current node, one from
+  // peer) so that one is for sending messages and one is for receiving
   Multicaster(std::string addr, std::vector<std::string> _peers) {
     boost::asio::io_context io_context;
+    _peers.push_back(addr);
     for (auto peer : _peers) {
       address address = address::from_string(peer);
       tcp::endpoint endpoint(address, PORT);
 
       // make a socket for each peer
       tcp::socket socket(io_context);
+      boost::asio::connect(socket, endpoint);
       connections.push_back(Connection(std::move(socket)));
     }
   }
 
+  // reads from one connection to the buffer and increments which connection it
+  // read from
   void read() {
     // ...
   }
 
+  // writes buffer to all connections
   void write() {
     // ...
   }

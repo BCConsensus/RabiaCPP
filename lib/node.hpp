@@ -9,9 +9,6 @@
 
 #include "proposal.hpp"
 
-using boost::asio::ip::address;
-using boost::asio::ip::tcp;
-
 class Node {
   // virtual uint32_t Size() = 0;
   // virtual int Propose(uint64_t id, const uint8_t* data, uint32_t size) = 0;
@@ -25,6 +22,9 @@ class Node {
     lindex = 0;
   }
 
+  // TODO: need map of proposal id to data replicated on each node
+  // so when client sends to one node, node sends data and id to all other nodes
+
   // peers - array of addresses of other nodes
   std::vector<std::string> peers;
 
@@ -33,7 +33,7 @@ class Node {
 
   // PQ - instance of priority queue
   // TODO: switch to blocking queue that waits until something is in queue
-  std::priority_queue<Proposal, std::vector<Proposal>, std::less<Proposal>> pq;
+  std::priority_queue<Proposal, std::vector<Proposal>> pq;
 
   // lindex - current slot index in the log
   uint16_t lindex;
