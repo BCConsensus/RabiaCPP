@@ -7,23 +7,22 @@
 #include <queue>
 #include <string>
 
+#include "networking.hpp"
 #include "proposal.hpp"
 
 class Node {
-  // virtual uint32_t Size() = 0;
-  // virtual int Propose(uint64_t id, const uint8_t* data, uint32_t size) = 0;
-  // virtual int Run() = 0;
-  // virtual int Repair(uint64_t index, uint64_t& out_id, uint8_t*& out_data,
-  // uint32_t& out_size) = 0; virtual int Consume(std::function<int(uint64_t,
-  // uint64_t, const uint8_t*, uint32_t)> block) = 0;
-  Node(std::string _address, std::vector<std::string> _peers) {
+
+  Node(std::string _address, std::vector<std::string> _peers)
+      : multicaster(_address, _peers) {
     addr = _address;
     peers = _peers;
     lindex = 0;
   }
 
-  // TODO: need map of proposal id to data replicated on each node
-  // so when client sends to one node, node sends data and id to all other nodes
+  Multicaster multicaster;
+
+  // TODO: not sure of type of data, need to think
+  std::map<uint64_t, boost::asio::mutable_buffer> data;
 
   // peers - array of addresses of other nodes
   std::vector<std::string> peers;
@@ -37,9 +36,6 @@ class Node {
 
   // lindex - current slot index in the log
   uint16_t lindex;
-
-  // messages
-  // std::map<uint64_t, char[]> messages;
 
   // TODO: need message IDs to create map of requests to not process
 
